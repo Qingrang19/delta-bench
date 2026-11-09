@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "baseline": "examples/baseline.csv",
+  "candidate": "examples/candidate-pass.csv",
+  "key_column": "frame",
+  "atol": 0.0001,
+  "rtol": 0.001,
+  "compared_rows": 3,
+  "baseline_rows": 3,
+  "candidate_rows": 3,
+  "missing_rows": [],
+  "additional_rows": [],
+  "columns": {
+    "conductivity": {
+      "count": 3,
+      "mismatches": 0,
+      "passed": true,
+      "mae": 1.0000000000000748e-05,
+      "rmse": 1.000000000000075e-05,
+      "max_difference": 1.0000000000010001e-05
+    },
+    "residual": {
+      "count": 3,
+      "mismatches": 0,
+      "passed": true,
+      "mae": 0.0,
+      "rmse": 0.0,
+      "max_difference": 0.0
+    }
+  },
+  "mismatches": []
+}

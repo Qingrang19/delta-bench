@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>delta-bench · FAIL</title><style>
+body{font:16px system-ui;background:#101e29;color:#e8f4f2;margin:3rem auto;max-width:1100px;padding:0 1rem}
+h1{color:#62e3bf}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.8rem;border-bottom:1px solid #456}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#172c39;padding:1rem}.summary{font-size:1.2rem}
+</style><h1>Δ delta-bench / FAIL</h1><p class="summary">已比较 2 行 · 缺失 1 行 · 新增 1 行</p>
+<p>判定：|candidate − baseline| ≤ atol + rtol × |baseline|。指标只覆盖双方共有键。</p>
+<table><thead><tr><th>列</th><th>行数</th><th>MAE</th><th>RMSE</th><th>最大差异</th><th>超差数</th></tr></thead><tbody><tr><td>conductivity</td><td>2</td><td>0.029999999999999985</td><td>0.042426406871192826</td><td>0.05999999999999997</td><td>1</td></tr><tr><td>residual</td><td>2</td><td>0.009000000000000001</td><td>0.012727922061357855</td><td>0.018000000000000002</td><td>1</td></tr></tbody></table>
+<h2>完整机器报告</h2><pre>{
+  &quot;schema_version&quot;: 1,
+  &quot;passed&quot;: false,
+  &quot;baseline&quot;: &quot;examples/baseline.csv&quot;,
+  &quot;candidate&quot;: &quot;examples/candidate-fail.csv&quot;,
+  &quot;key_column&quot;: &quot;frame&quot;,
+  &quot;atol&quot;: 0.0001,
+  &quot;rtol&quot;: 0.001,
+  &quot;compared_rows&quot;: 2,
+  &quot;baseline_rows&quot;: 3,
+  &quot;candidate_rows&quot;: 3,
+  &quot;missing_rows&quot;: [
+    &quot;f003&quot;
+  ],
+  &quot;additional_rows&quot;: [
+    &quot;f004&quot;
+  ],
+  &quot;columns&quot;: {
+    &quot;conductivity&quot;: {
+      &quot;count&quot;: 2,
+      &quot;mismatches&quot;: 1,
+      &quot;passed&quot;: false,
+      &quot;mae&quot;: 0.029999999999999985,
+      &quot;rmse&quot;: 0.042426406871192826,
+      &quot;max_difference&quot;: 0.05999999999999997
+    },
+    &quot;residual&quot;: {
+      &quot;count&quot;: 2,
+      &quot;mismatches&quot;: 1,
+      &quot;passed&quot;: false,
+      &quot;mae&quot;: 0.009000000000000001,
+      &quot;rmse&quot;: 0.012727922061357855,
+      &quot;max_difference&quot;: 0.018000000000000002
+    }
+  },
+  &quot;mismatches&quot;: [
+    {
+      &quot;key&quot;: &quot;f002&quot;,
+      &quot;column&quot;: &quot;conductivity&quot;,
+      &quot;baseline&quot;: 0.23,
+      &quot;candidate&quot;: 0.29,
+      &quot;abs_difference&quot;: 0.05999999999999997,
+      &quot;tolerance&quot;: 0.00033
+    },
+    {
+      &quot;key&quot;: &quot;f001&quot;,
+      &quot;column&quot;: &quot;residual&quot;,
+      &quot;baseline&quot;: 0.002,
+      &quot;candidate&quot;: 0.02,
+      &quot;abs_difference&quot;: 0.018000000000000002,
+      &quot;tolerance&quot;: 0.000102
+    }
+  ]
+}</pre></html>

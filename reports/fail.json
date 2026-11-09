@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "passed": false,
+  "baseline": "examples/baseline.csv",
+  "candidate": "examples/candidate-fail.csv",
+  "key_column": "frame",
+  "atol": 0.0001,
+  "rtol": 0.001,
+  "compared_rows": 2,
+  "baseline_rows": 3,
+  "candidate_rows": 3,
+  "missing_rows": [
+    "f003"
+  ],
+  "additional_rows": [
+    "f004"
+  ],
+  "columns": {
+    "conductivity": {
+      "count": 2,
+      "mismatches": 1,
+      "passed": false,
+      "mae": 0.029999999999999985,
+      "rmse": 0.042426406871192826,
+      "max_difference": 0.05999999999999997
+    },
+    "residual": {
+      "count": 2,
+      "mismatches": 1,
+      "passed": false,
+      "mae": 0.009000000000000001,
+      "rmse": 0.012727922061357855,
+      "max_difference": 0.018000000000000002
+    }
+  },
+  "mismatches": [
+    {
+      "key": "f002",
+      "column": "conductivity",
+      "baseline": 0.23,
+      "candidate": 0.29,
+      "abs_difference": 0.05999999999999997,
+      "tolerance": 0.00033
+    },
+    {
+      "key": "f001",
+      "column": "residual",
+      "baseline": 0.002,
+      "candidate": 0.02,
+      "abs_difference": 0.018000000000000002,
+      "tolerance": 0.000102
+    }
+  ]
+}

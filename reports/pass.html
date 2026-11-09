@@ -1,0 +1,42 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>delta-bench · PASS</title><style>
+body{font:16px system-ui;background:#101e29;color:#e8f4f2;margin:3rem auto;max-width:1100px;padding:0 1rem}
+h1{color:#62e3bf}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.8rem;border-bottom:1px solid #456}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#172c39;padding:1rem}.summary{font-size:1.2rem}
+</style><h1>Δ delta-bench / PASS</h1><p class="summary">已比较 3 行 · 缺失 0 行 · 新增 0 行</p>
+<p>判定：|candidate − baseline| ≤ atol + rtol × |baseline|。指标只覆盖双方共有键。</p>
+<table><thead><tr><th>列</th><th>行数</th><th>MAE</th><th>RMSE</th><th>最大差异</th><th>超差数</th></tr></thead><tbody><tr><td>conductivity</td><td>3</td><td>1.0000000000000748e-05</td><td>1.000000000000075e-05</td><td>1.0000000000010001e-05</td><td>0</td></tr><tr><td>residual</td><td>3</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0</td></tr></tbody></table>
+<h2>完整机器报告</h2><pre>{
+  &quot;schema_version&quot;: 1,
+  &quot;passed&quot;: true,
+  &quot;baseline&quot;: &quot;examples/baseline.csv&quot;,
+  &quot;candidate&quot;: &quot;examples/candidate-pass.csv&quot;,
+  &quot;key_column&quot;: &quot;frame&quot;,
+  &quot;atol&quot;: 0.0001,
+  &quot;rtol&quot;: 0.001,
+  &quot;compared_rows&quot;: 3,
+  &quot;baseline_rows&quot;: 3,
+  &quot;candidate_rows&quot;: 3,
+  &quot;missing_rows&quot;: [],
+  &quot;additional_rows&quot;: [],
+  &quot;columns&quot;: {
+    &quot;conductivity&quot;: {
+      &quot;count&quot;: 3,
+      &quot;mismatches&quot;: 0,
+      &quot;passed&quot;: true,
+      &quot;mae&quot;: 1.0000000000000748e-05,
+      &quot;rmse&quot;: 1.000000000000075e-05,
+      &quot;max_difference&quot;: 1.0000000000010001e-05
+    },
+    &quot;residual&quot;: {
+      &quot;count&quot;: 3,
+      &quot;mismatches&quot;: 0,
+      &quot;passed&quot;: true,
+      &quot;mae&quot;: 0.0,
+      &quot;rmse&quot;: 0.0,
+      &quot;max_difference&quot;: 0.0
+    }
+  },
+  &quot;mismatches&quot;: []
+}</pre></html>

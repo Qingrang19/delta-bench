@@ -1,0 +1,9 @@
+[project]
+name = "delta-bench"
+version = "0.1.0"
+description = "Stdlib-only numerical CSV regression gates for synthetic EIT pipelines"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+delta-bench = "delta_bench.__main__:main"

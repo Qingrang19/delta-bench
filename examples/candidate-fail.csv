@@ -1,0 +1,4 @@
+frame,conductivity,residual,label
+f001,0.15,0.02,synthetic
+f002,0.29,0.003,synthetic
+f004,0.31,0.004,synthetic
