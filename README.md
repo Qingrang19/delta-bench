@@ -1,88 +1,65 @@
-# delta-bench
+<p><img src="assets/logo.svg" alt="delta bench" width="420"></p>
 
-![delta-bench 标识](assets/logo.svg)
+# Delta Bench
 
-**为 EIT（电阻抗成像）数值流水线提供可解释、离线、可接入 CI 的 CSV 回归门禁。**
+按唯一键比较两份 CSV 数值结果，找出超差、缺失行和新增行。输出 JSON 与 HTML 报告，并用退出码控制 CI 是否继续，适合数值计算与 EIT 流水线的回归检查。
 
-把已确认的基线输出与候选输出按唯一键对齐，显式选择数值列，得到机器 JSON 和无需网络的 HTML 报告。示例全部为合成数据，不含真实患者或设备数据。本工具只比较输出，不执行 EIT 重建、不评价临床有效性。
+## 运行示例
 
-## 快速运行
+同一份基线，对照两个候选结果：一个全部通过，另一个有 2 项超差，缺少 `f003`、新增 `f004`。
 
-Python 3.10+，运行及测试仅使用标准库，不需要 pip 安装。进入项目根目录：
+![实际通过与失败结果，展示键对齐和两项超出容差的数值差异](assets/demo.svg)
+
+图中数据来自实际运行的 [通过报告](reports/pass.json) 与 [失败报告](reports/fail.json)。小图分别使用自己的数值横轴，倍数为差异除以该项容差。
+
+需要 Python 3.10+。在项目根目录执行，无第三方依赖：
 
 ```sh
-mkdir -p reports
 python -m delta_bench examples/baseline.csv examples/candidate-pass.csv \
   --key frame --columns conductivity,residual --atol 0.0001 --rtol 0.001 \
   --json reports/pass.json --html reports/pass.html
-# 退出码 0：通过
 
 python -m delta_bench examples/baseline.csv examples/candidate-fail.csv \
   --key frame --columns conductivity,residual --atol 0.0001 --rtol 0.001 \
   --json reports/fail.json --html reports/fail.html
-# 退出码 1：超差、缺行或新增行
-
-python -m unittest discover -s tests -v
 ```
 
-直接在浏览器打开 `reports/pass.html` 或 `reports/fail.html`。报告没有脚本、外部字体、CDN 或遥测。stdout 始终是 JSON；`--json` / `--html` 额外写入本地文件。父目录须已存在，已有报告文件会覆盖，但禁止覆盖输入或让两个报告共用同一路径。
+第一条退出 `0`，第二条退出 `1`。浏览器打开 `reports/pass.html` 或 `reports/fail.html` 查看明细。stdout 始终输出 JSON，`--json`、`--html` 额外保存文件。
 
-## 判定与指标
+## 怎样判定通过
 
-对每个共有键、每个选定列，以基线值 b 和候选值 c 计算：
-
-- 差异 d = |c − b|。
-- 容差 t = atol + rtol × |b|；**d ≤ t 通过**，等号包含在内。
-- 相对容差只相对基线，不相对候选，也不取两者最大值，因此比较有方向性。
-- 默认 atol = rtol = 0，意味着严格浮点数值相等。基线为零时只靠绝对容差。
-- 每列 MAE = Σd / n，RMSE = sqrt(Σd² / n)，最大差异 = max(d)。所有指标包含共有键中的通过与失败单元格，不包括无匹配键。
-- 超差明细记录键、列、两值、差异及实际容差；缺失与新增键分别列出。
-- 任意超差、缺失键、新增键或零共有键导致整体失败。零共有键的列指标为 JSON null，列 passed 为 false。
-- 浮点运算使用 Python binary64。CSV 文本 `1` 与 `1.0` 数值相等。容差应按物理单位、噪声与科学验证结果设置，而不是只为让 CI 通过。
-
-## 数据契约
-
-CSV 使用逗号分隔、UTF-8（兼容 BOM），第一行为非空且不重复的列名。键按原始字符串精确匹配，顺序无关，键必须非空且唯一；不会自动去掉键的前后空格。`--columns` 接受以逗号分隔的列名，必须唯一且不含键列；两份文件都必须包含它们。未选择的辅助列不比较，额外辅助列允许存在。
-
-拒绝：空数据、重复键、重复列名、行宽不一致、缺少所选列、非数字或非有限数值（NaN/±Inf）、负或非有限容差。没有配对的行也必须满足所选数值列契约。差值或容差运算超出浮点范围同样拒绝。
-
-## CLI 与 CI
-
-| 退出码 | 意义 | 建议 |
-| --- | --- | --- |
-| 0 | 全部通过 | 允许流水线继续 |
-| 1 | 有效输入但回归失败 | 检查明细，不应自动替换基线 |
-| 2 | 输入、参数或报告写入错误 | 修复输入或环境后重跑 |
-
-无效输入时 stderr 输出错误 JSON（argparse 参数语法错误使用其标准错误文本）。报告只在有效比较后产生，不应依赖旧文件作为当前结果；报告写入不是多文件原子事务，任一写失败必须按退出码 2 处理。建议 CI 每次使用新的输出目录并保存 stdout、stderr 及退出码。
-
-JSON `schema_version: 1` 包含 passed、基线/候选路径、容差、行数、missing_rows、additional_rows、columns（各列统计）、mismatches（全部超差项）。列表顺序确定：键按字符串排序，列按 CLI 选择顺序输出。
-
-## 架构
+对基线值 b 与候选值 c，满足下式即通过：
 
 ```text
-delta_bench/core.py       CSV 校验、键对齐、容差与指标
-           /report.py    HTML 转义和离线报告
-           /__main__.py  CLI、文件写入、CI 退出码
-tests/test_delta.py      标准库 unittest，包含错误及边界覆盖
-examples/                三份合成 EIT 数值快照
-assets/logo.svg          双轨信号 / 三角比较门标识
+|c − b| ≤ atol + rtol × |b|
 ```
 
-没有运行时第三方依赖；模块可直接导入 `delta_bench.core.compare` 做本地集成。核心逻辑不依赖报告 UI。
+- 相对容差以基线为准；基线为零时使用绝对容差。
+- 两个容差默认都是 0，即严格数值相等。按数据单位和允许误差设置它们。
+- 任意超差、缺失键、新增键或没有共有键，整体结果都失败。
+- 每列输出 MAE、RMSE、最大绝对差与超差数量；统计包括所有共有键。
 
-## 安全、范围与限制
+每条超差记录包含键、列名、两值、绝对差与实际容差。JSON 使用 `schema_version: 1`；键按字符串排序，列按参数顺序输出。
 
-- 全量载入内存，复杂度大致 O(行数 × 选定列数)，排序另加 O(行数 log 行数)；不适合无限流或超大数据。报告包含全部超差，可能较大。
-- 不做单位转换、插值、模糊键匹配、统计显著性检验或临床诊断。请先对齐物理量和坐标系。
-- 明细会包含原始键与选定数值，HTML/JSON 是数据副本，分享前检查隐私。HTML 对输入字符串转义，但这不等于匿名化。
-- 不监听端口、不联网、不上传、不自动更新基线、不运行候选程序。
+## 输入与输出
 
-## 验证
+- CSV 为带表头的 UTF-8 文件，兼容 BOM；列名唯一，行宽一致。
+- `--key` 列必须非空且唯一。键按原始字符串匹配，行顺序可以不同。
+- `--columns` 显式指定数值列，两份文件都须包含这些列；其他辅助列不比较。
+- 所选数值必须有限，NaN、Inf、空值和非数字会报错。容差须为有限非负数。
+- 报告目录须已存在；同名报告会覆盖，输入文件受到覆盖保护。
+
+退出码 `0`：通过；`1`：有效比较发现差异；`2`：参数、输入或写入错误。CI 可直接使用退出码作为检查结果，并保存 JSON/HTML 供回查。
+
+## 开发
 
 ```sh
 python -m unittest discover -s tests -v
-python -m compileall -q delta_bench
 ```
 
-包含键对齐、组合容差、基线方向性、指标、非有限值、重复键、畸形 CSV、HTML 注入转义、输出保护及 CLI 报告测试。示例 smoke 的 0/1 退出码需分别验证，失败例本身不是测试失败。
+- `core.py`：CSV 校验、键对齐、容差与指标，可导入 `compare` 使用。
+- `report.py`：HTML 报告。
+- `__main__.py`：命令行、文件输出与退出码。
+- `examples/`：基线、通过候选、失败候选三份数值样例。
+
+计算采用双精度浮点，全量数据在内存中处理。比较前统一单位与键的含义；CI 每次使用独立输出目录，便于区分本次结果和历史报告。
